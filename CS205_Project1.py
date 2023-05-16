@@ -1,7 +1,10 @@
 ### CS205 Project1 ###
-import copy
+import copy, time
+
 # reference of deepcopy
 # https://www.geeksforgeeks.org/copy-python-deep-copy-shallow-copy/
+# reference of time
+# https://docs.python.org/3/library/time.html
 
 class Node :
     def __init__( self, puzzle ) :
@@ -101,16 +104,17 @@ def findZero( puzzle ) :
             if ( puzzle[i][j] == 0 ) :
                 return i, j
 
+
 def hasVisited( puzzle, visited ) :
     # check the state whether has been visited
     if ( len( visited ) == 0 ) :
         return False
 
-    for i in range( len( puzzle ) ) :
-        for j in range( len( puzzle[i] ) ) :
-            if ( puzzle[i][j] is not visited[i][j] ) :
-                return False
-    return True
+    for i in range( len( visited ) ) :
+        if ( puzzle == visited[i] ) :
+            return True
+
+    return False
 
 def exploreAll( node, visited ) :
     # expand the node
@@ -170,7 +174,7 @@ def showPuzzle( puzzle ) :
 
 def initilizedPuzzle( puzzle, solution ) :
     # initilize a puzzle
-    puzzle = [[1,2,3],[4,5,6],[0,7,8]]
+    puzzle = [[1,2,3],[5,0,6],[4,7,8]]
     solution = [[1,2,3],[4,5,6],[7,8,0]]
     return puzzle, solution
 
@@ -257,8 +261,10 @@ def general_search( problem, q_function, solution ) :
 
         node = q.pop( 0 )
 
+        showPuzzle( node.getState() )
         if ( isGoal( node.getState(), solution ) is True ) :
-            print( 'Expaned nodex: {}'.format( num_expanded_node ) )
+            print( 'Goal State!' )
+            print( 'Expaned nodes: {}'.format( num_expanded_node ) )
             print( 'Depth: {}'.format( node.getDepth() ) )
             return "success"
 
@@ -286,9 +292,11 @@ def general_search( problem, q_function, solution ) :
 
                 ele.setF( ele.getDepth() + ele.getH() )
                 q.append( ele )
-                # sort queue
-                sortQ( q )
                 visited.append( ele.getState() )
+
+        if ( q_function == 2 or q_function == 3 ) :
+            # sort queue
+            sortQ( q )
 
 
 def main() :
@@ -310,7 +318,12 @@ def main() :
     
     node = Node( puzzle )
     sel = int( input( '[*] Please choose the search 1. UCS 2. A* with misplaced 3. A* with manhattan:  ' ) )
+    start = time.time()
     general_search( puzzle, sel, solution )
+    end = time.time()
+    process_time = end - start
+    print( "It takes ", end='' )
+    print( "%.2f" %process_time + "s" )
 
 
 if __name__ == "__main__" :
